@@ -63,18 +63,20 @@ const countCauses = function (disruptions) {
   }, []);
 };
 
-// const obj = { name: 'Broken down train', value: 20, color: '#e02121' };
-
 /**
+ * Renders a packed bubble chart of disruption causes using D3's hierarchy and pack layout.
  *
+ * Each cause is represented as a div element and size is determined by the num value of the cause
+ * and labeled by its `title`.
  *
- * @param {Object[]} causes - An array of disruptions data thats returned
- *  from 'getCauses' function to be visualized
- *
+ * @param {Object[]} array of causes
+ *   An array of cause objects:
+ *     - `title`: The label shown inside the bubble.
+ *     - `value`: The numeric weight determining bubble size.
+ *     - `color`: The background color to be used for the background which is derived
+ *                from the 'colors' object *
  */
 const displayCauses = function (causes) {
-  causesContainer.innerHTML = '';
-
   const root = d3.hierarchy({ children: causes }).sum(d => d.value);
   const pack = d3
     .pack()
@@ -104,6 +106,12 @@ const displayCauses = function (causes) {
   });
 };
 
+const userRoute = new Set();
+
+const makeRouteOnMap = function (disruptions) {
+  console.log(disruptions);
+};
+
 const getCauses = function (e) {
   /// keep in mind that the THIS keyword has now been set to an array containing 'Disruptions' data and 'Stations' data
   const [disruptions, stations] = this; // Directly destructure the array here
@@ -118,19 +126,6 @@ const getCauses = function (e) {
 
   const allDisruptions = Object.values(disruptions).flat();
 
-  // const checkCheckCheck = allDisruptions.reduce((acc, curr) => {
-  //   const group = curr?.cause_group;
-
-  //   if (!acc[group]) {
-  //     acc[group] = 0;
-  //   }
-
-  //   acc[group]++;
-  //   return acc;
-  // }, {});
-
-  // console.log(checkCheckCheck);
-
   if (!departure || !arrival || !year) return;
 
   let allMatches;
@@ -141,11 +136,15 @@ const getCauses = function (e) {
     allMatches = routesIncluding(disruptions[year], departure, arrival);
   }
 
-  const causesData = countCauses(allMatches);
+  causesContainer.innerHTML = '';
 
-  console.log(causesData);
+  makeRouteOnMap(allMatches);
 
-  displayCauses(causesData);
+  if (allMatches.length > 0) {
+    const causesData = countCauses(allMatches);
+
+    displayCauses(causesData);
+  }
 };
 
 const boundGetCauses = getCauses.bind([disruptionsData, stationsData]);

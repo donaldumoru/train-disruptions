@@ -46,12 +46,12 @@ button {
 
 .hero-container {
   display: flex;
-  /* margin-left: 100px; */
 }
 
 .map-container {
   height: 80vh;
   width: 40%;
+  margin-left: 50px;
 }
 
 .causes-container {
@@ -74,7 +74,8 @@ button {
   color: white;
   text-align: center;
   padding: 10px;
-  line-height: 1.2;
-  word-break: break-word;
-  border: 2px solid #444;
+  /* line-height: 1.2; */
+  /* word-break: break-word; */
+  /* border: 2px solid #444; */
+  border: none;
 }
