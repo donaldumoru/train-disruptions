@@ -1,0 +1,80 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* background-color: #4a4a4a; */
+  background-color: rgb(16, 14, 14);
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+  color: white;
+  margin: 30px 0 50px 100px;
+  align-items: end;
+}
+
+label {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+select {
+  width: 150px;
+  height: 35px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  height: 35px;
+  padding: 0 50px;
+  margin-left: 50px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.controls div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hero-container {
+  display: flex;
+  margin-left: 100px;
+}
+
+.map-container {
+  height: 80vh;
+  width: 40%;
+}
+
+.causes-container {
+  position: relative;
+  top: -100px;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+}
+
+/**********/
+.bubble {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  line-height: 1.2;
+  word-break: break-word;
+  border: 2px solid #444;
+}
