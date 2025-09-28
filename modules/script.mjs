@@ -1,10 +1,11 @@
-import { disruptionsData, stationsData } from './fetch.mjs';
+import { disruptionsData } from './fetch.mjs';
+import { map, stationOptions } from './station-coords.mjs';
 
 const causesContainer = document.querySelector('.causes-container');
 
 const controlsContainer = document.querySelector('.controls');
 
-const colors = {
+const causesColors = {
   others: '#1395FF',
   accidents: '#E8870F',
   engineering_work: '#B23B63',
@@ -28,8 +29,10 @@ const colors = {
  */
 const routesIncluding = function (disruptions, fromCode, toCode) {
   return disruptions.filter(r => {
-    const i = r.rdt_station_codes.indexOf(fromCode);
-    const j = r.rdt_station_codes.indexOf(toCode);
+    const codes = r?.rdt_station_codes.split(',').map(c => c.trim());
+
+    const i = codes.indexOf(fromCode);
+    const j = codes.indexOf(toCode);
     return i !== -1 && j !== -1 && i < j;
   });
 };
@@ -54,7 +57,7 @@ const countCauses = function (disruptions) {
       const obj = {};
       obj.title = cause;
       obj.value = 1;
-      obj.color = colors[curr?.cause_group.split(' ').join('_')];
+      obj.color = causesColors[curr?.cause_group.split(' ').join('_')];
 
       acc.push(obj);
     }
@@ -78,10 +81,7 @@ const countCauses = function (disruptions) {
  */
 const displayCauses = function (causes) {
   const root = d3.hierarchy({ children: causes }).sum(d => d.value);
-  const pack = d3
-    .pack()
-    .size([800, 800]) // canvas size
-    .padding(5);
+  const pack = d3.pack().size([800, 800]).padding(5);
   const nodes = pack(root).leaves();
 
   nodes.forEach(d => {
@@ -89,8 +89,8 @@ const displayCauses = function (causes) {
     div.setAttribute('data-id', 'bubble');
     div.className = 'bubble';
     div.textContent = d.data.title;
-    div.style.width = div.style.height = d.r * 2 + 'px'; // radius * 2
-    div.style.left = d.x - d.r + 'px'; // position
+    div.style.width = div.style.height = d.r * 2 + 'px';
+    div.style.left = d.x - d.r + 'px';
     div.style.top = d.y - d.r + 'px';
     div.style.position = 'absolute';
     div.style.borderRadius = '50%';
@@ -106,22 +106,88 @@ const displayCauses = function (causes) {
   });
 };
 
-const userRoute = new Set();
+const makeRouteOnMap = function (disruptions, stations, departure, arrival) {
+  const allStations = disruptions.map(d => d?.rdt_station_codes.split(', '));
 
-const makeRouteOnMap = function (disruptions) {
-  console.log(disruptions);
+  const departureData = stations.find(station => station.code === departure);
+  const arrivalData = stations.find(station => station.code === arrival);
+
+  function wavyRoute(
+    from,
+    to,
+    { waves = 3, amplitude = 0.03, samples = 180 } = {}
+  ) {
+    const [lat1, lng1] = from;
+    const [lat2, lng2] = to;
+
+    const lat0 = (((lat1 + lat2) / 2) * Math.PI) / 180;
+    const cos0 = Math.cos(lat0);
+
+    const x1 = lng1 * cos0,
+      y1 = lat1;
+    const x2 = lng2 * cos0,
+      y2 = lat2;
+
+    const dx = x2 - x1,
+      dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len,
+      uy = dy / len;
+    const nx = -uy,
+      ny = ux;
+
+    const A = amplitude * len;
+
+    const pts = [];
+    for (let k = 0; k <= samples; k++) {
+      const t = k / samples;
+      const sx = x1 + t * dx;
+      const sy = y1 + t * dy;
+
+      const taper = Math.sin(Math.PI * t);
+      const wobble = Math.sin(2 * Math.PI * waves * t) * taper;
+
+      const wx = sx + nx * (A * wobble);
+      const wy = sy + ny * (A * wobble);
+
+      pts.push([wy, wx / cos0]);
+    }
+    return pts;
+  }
+
+  const from = [departureData.geo_lat, departureData.geo_lng];
+  const to = [arrivalData.geo_lat, arrivalData.geo_lng];
+
+  const latlngs = wavyRoute(from, to, {
+    waves: 4,
+    amplitude: 0.025,
+    samples: 220,
+  });
+
+  if (window.currentRoute) map.removeLayer(window.currentRoute);
+  window.currentRoute = L.polyline(latlngs, {
+    color: '#0ea5e9',
+    weight: 8,
+    opacity: 0.95,
+  }).addTo(map);
+
+  map.fitBounds(window.currentRoute.getBounds().pad(0.1));
 };
 
 const getCauses = function (e) {
-  /// keep in mind that the THIS keyword has now been set to an array containing 'Disruptions' data and 'Stations' data
+  /// keep in mind------->>>>>that the THIS keyword has now been set to an array containing 'Disruptions' data and 'Stations' data
   const [disruptions, stations] = this; // Directly destructure the array here
+
+  console.log(stations);
 
   const departure = e.currentTarget.querySelector(
     '.departure-wrapper select'
   ).value;
+
   const arrival = e.currentTarget.querySelector(
     '.arrival-wrapper select'
   ).value;
+
   const year = e.currentTarget.querySelector('.year-wrapper select').value;
 
   const allDisruptions = Object.values(disruptions).flat();
@@ -138,7 +204,7 @@ const getCauses = function (e) {
 
   causesContainer.innerHTML = '';
 
-  makeRouteOnMap(allMatches);
+  makeRouteOnMap(allMatches, stations, departure, arrival);
 
   if (allMatches.length > 0) {
     const causesData = countCauses(allMatches);
@@ -147,10 +213,12 @@ const getCauses = function (e) {
   }
 };
 
-const boundGetCauses = getCauses.bind([disruptionsData, stationsData]);
+const boundGetCauses = getCauses.bind([disruptionsData, stationOptions]);
 
 controlsContainer.addEventListener('click', e => {
   if (e.target.tagName === 'BUTTON') {
     boundGetCauses(e);
   }
 });
+
+//

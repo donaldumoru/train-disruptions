@@ -11,6 +11,7 @@ const stationOptions = stationsData
   );
 
 const map = L.map('map').setView([52.1, 5.3], 7);
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
   attribution: '&copy; OpenStreetMap',
@@ -74,4 +75,4 @@ const MAKE_MAP = function () {
   /***************************************************************/
 };
 
-export { MAKE_MAP, stationOptions, allDisruptions };
+export { MAKE_MAP, stationOptions, allDisruptions, map };
