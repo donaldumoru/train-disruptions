@@ -1,6 +1,14 @@
 import { disruptionsData } from './fetch.mjs';
 import { map, stationOptions } from './station-coords.mjs';
 
+const rankingContainer = document.querySelector('.rank-container');
+
+import {
+  parseCodes,
+  getAllRoutes,
+  getAllRoutesArray,
+} from './route-ranking.mjs';
+
 const causesContainer = document.querySelector('.causes-container');
 
 const controlsContainer = document.querySelector('.controls');
@@ -23,16 +31,18 @@ const causesColors = {
  * starting station and a destination station, in the correct order.
  *
  * @param {string} fromCode - The station code of the starting point.
- * @param {string} toCode - The station code of the destination point.
+ * @param {string} toCode - The station code of the arrival point.
  * @returns {Object[]} An array of all disruptions that pass the filter criteria.
  *
  */
 const routesIncluding = function (disruptions, fromCode, toCode) {
+  // Filter to get array of the disruptions where starting station comes before arrival station
   return disruptions.filter(r => {
     const codes = r?.rdt_station_codes.split(',').map(c => c.trim());
 
     const i = codes.indexOf(fromCode);
     const j = codes.indexOf(toCode);
+
     return i !== -1 && j !== -1 && i < j;
   });
 };
@@ -79,7 +89,7 @@ const countCauses = function (disruptions) {
  *     - `color`: The background color to be used for the background which is derived
  *                from the 'colors' object *
  */
-const displayCauses = function (causes) {
+const displayBubbleCharts = function (causes) {
   const root = d3.hierarchy({ children: causes }).sum(d => d.value);
   const pack = d3.pack().size([800, 800]).padding(5);
   const nodes = pack(root).leaves();
@@ -107,7 +117,7 @@ const displayCauses = function (causes) {
 };
 
 const makeRouteOnMap = function (disruptions, stations, departure, arrival) {
-  const allStations = disruptions.map(d => d?.rdt_station_codes.split(', '));
+  // const allStations = disruptions.map(d => d?.rdt_station_codes.split(', '));
 
   const departureData = stations.find(station => station.code === departure);
   const arrivalData = stations.find(station => station.code === arrival);
@@ -174,11 +184,131 @@ const makeRouteOnMap = function (disruptions, stations, departure, arrival) {
   map.fitBounds(window.currentRoute.getBounds().pad(0.1));
 };
 
+const routeRanking = function (disruptions, stations, period = 'all') {
+  // Build array of all possible routes
+  const routesArr = getAllRoutesArray(disruptionsData, period, stationOptions);
+
+  // Flatten disruptions for the selected period
+  const list =
+    period === 'all'
+      ? Object.values(disruptions).flat()
+      : disruptions[period] || [];
+
+  // Parse station codes for each disruption
+  const stationCodes = list.map(d => parseCodes(d.rdt_station_codes));
+
+  const counts = new Map();
+
+  for (const codes of stationCodes) {
+    if (!codes || codes.length < 2) continue;
+
+    const seen = new Set();
+
+    for (let i = 0; i < codes.length; i++) {
+      const from = codes[i];
+      for (let j = i + 1; j < codes.length; j++) {
+        const to = codes[j];
+        if (from === to) continue;
+
+        const key = `${from}|${to}`;
+        if (seen.has(key)) continue;
+
+        seen.add(key);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    }
+  }
+
+  const results = routesArr.map(({ from, to }) => {
+    const key = `${from}|${to}`;
+    return { from, to, user: false, disruptionValue: counts.get(key) || 0 };
+  });
+
+  return results;
+};
+
+const displayRankings = function (rankings, userRank, period) {
+  rankingContainer.innerHTML = '';
+
+  const rankHeader = document.createElement('p');
+  rankHeader.className = 'rank-header';
+
+  const showYear = period === 'all' ? 'Since 2021' : period;
+
+  rankHeader.textContent = `Where your route ranks - ${showYear}`;
+
+  rankingContainer.append(rankHeader);
+
+  const indexOfUserRank = rankings.indexOf(userRank);
+
+  const ranksToDisplay = rankings.slice(
+    indexOfUserRank - 5,
+    indexOfUserRank + 10
+  );
+
+  const maxDisruptions = ranksToDisplay[0]?.disruptionValue || 1;
+  const MAX_PX = 400;
+  const MIN_PX = 60;
+
+  ranksToDisplay.forEach(({ from, to, disruptionValue, user, rank }) => {
+    const width = Math.max(
+      MIN_PX,
+      Math.round((disruptionValue / maxDisruptions) * MAX_PX)
+    );
+
+    const fromTo = `${from} - ${to}`;
+
+    const textWrapper = document.createElement('div');
+    textWrapper.className = 'text-wrapper';
+
+    const rankDisplay = document.createElement('span');
+    rankDisplay.textContent = `${rank + 1}.`;
+    const fromToDisplay = document.createElement('span');
+    fromToDisplay.textContent = `${fromTo}`;
+
+    textWrapper.append(rankDisplay, fromToDisplay);
+
+    const rankWrapper = document.createElement('div');
+    rankWrapper.className = 'rank-wrapper';
+
+    if (user) {
+      rankWrapper.classList.add('show-user-route');
+    }
+
+    const trainContainer = document.createElement('div');
+    trainContainer.className = 'train-container';
+
+    const train = document.createElement('div');
+    train.className = 'train';
+    train.style.width = `${width}px`;
+
+    trainContainer.append(train);
+
+    // Windows: fit as many as width allows
+    const WINDOW_W = 15; // px
+
+    const count = width / WINDOW_W / 2;
+
+    for (let i = 0; i < count; i++) {
+      const window = document.createElement('div');
+      window.className = 'window';
+      train.appendChild(window);
+    }
+
+    const disruptionCount = document.createElement('span');
+    disruptionCount.className = 'disruption-count';
+    disruptionCount.textContent = `${disruptionValue} disruptions`;
+    trainContainer.append(disruptionCount);
+
+    rankWrapper.append(textWrapper, trainContainer);
+
+    rankingContainer.append(rankWrapper);
+  });
+};
+
 const getCauses = function (e) {
   /// keep in mind------->>>>>that the THIS keyword has now been set to an array containing 'Disruptions' data and 'Stations' data
   const [disruptions, stations] = this; // Directly destructure the array here
-
-  console.log(stations);
 
   const departure = e.currentTarget.querySelector(
     '.departure-wrapper select'
@@ -209,7 +339,49 @@ const getCauses = function (e) {
   if (allMatches.length > 0) {
     const causesData = countCauses(allMatches);
 
-    displayCauses(causesData);
+    let userRanking = {
+      from: departure,
+      to: arrival,
+      user: true,
+      disruptionValue: causesData.reduce((acc, curr) => (acc += curr.value), 0),
+    };
+
+    const allDisruptionsRankings = routeRanking(disruptionsData, year);
+
+    if (
+      allDisruptionsRankings.some(
+        d => d.from === userRanking.from && d.to === userRanking.to
+      )
+    ) {
+      const foundRoute = allDisruptionsRankings.find(
+        d => d.from === userRanking.from && d.to === userRanking.to
+      );
+
+      const indexOfFoundRoute = allDisruptionsRankings.indexOf(foundRoute);
+      allDisruptionsRankings[indexOfFoundRoute] = userRanking;
+    } else {
+      allDisruptionsRankings.push(userRanking);
+    }
+
+    // allDisruptionsRankings.push(userRanking);
+
+    const sortedResults = allDisruptionsRankings
+      .sort((a, b) => b.disruptionValue - a.disruptionValue)
+      .reduce((acc, curr, index) => {
+        if (curr.rank) {
+          curr.rank = index;
+        }
+
+        curr.rank = index;
+        acc.push(curr);
+
+        return acc;
+      }, []);
+
+    console.log(year);
+    displayRankings(sortedResults, userRanking, year);
+
+    displayBubbleCharts(causesData);
   }
 };
 
@@ -220,5 +392,3 @@ controlsContainer.addEventListener('click', e => {
     boundGetCauses(e);
   }
 });
-
-//

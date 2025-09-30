@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>rijdendetreinen</title>
+    <title>Train Disruption</title>
 
     <link
       rel="stylesheet"
@@ -32,7 +32,6 @@
       import { MAKE_MAP } from './modules/station-coords.mjs';
       import { MAKE_CONTROLS } from './modules/render-controls.mjs';
       import { renderCausesByYear } from './modules/render-causes.mjs';
-      import { countCauses } from './modules/display-data.mjs';
 
       MAKE_MAP();
       MAKE_CONTROLS();
@@ -74,17 +73,9 @@
       </div>
     </main>
 
-    <div class="train">
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-      <div class="window"></div>
-    </div>
+    <section class="details-container">
+      <div class="days-info-container"></div>
+      <div class="rank-container"></div>
+    </section>
   </body>
 </html>

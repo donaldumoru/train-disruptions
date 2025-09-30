@@ -1,39 +1,39 @@
-const body = document.querySelector('body');
+// const body = document.querySelector('body');
 
-import { disruptionsData } from './fetch.mjs';
+// import { disruptionsData } from './fetch.mjs';
 
-const flattenedData = Object.entries(disruptionsData)
-  .flat()
-  .filter(el => {
-    if (typeof el !== 'string') return el;
-  })
-  .flat();
+// const flattenedData = Object.entries(disruptionsData)
+//   .flat()
+//   .filter(el => {
+//     if (typeof el !== 'string') return el;
+//   })
+//   .flat();
 
-const countCauses = flattenedData.reduce((acc, curr) => {
-  const cause = curr.cause_en;
+// const countCauses = flattenedData.reduce((acc, curr) => {
+//   const cause = curr.cause_en;
 
-  if (!acc[cause]) {
-    acc[cause] = 0;
-  }
+//   if (!acc[cause]) {
+//     acc[cause] = 0;
+//   }
 
-  acc[cause]++;
+//   acc[cause]++;
 
-  return acc;
-}, {});
+//   return acc;
+// }, {});
 
-// console.log(countCauses);
+// const causesArr = Object.entries(countCauses);
 
-const causesArr = Object.entries(countCauses);
+// const numOfAllData = Object.entries(disruptionsData)
+//   .flat()
+//   .filter(el => typeof el !== 'string')
+//   .flat()
+//   .reduce((acc, _) => {
+//     acc++;
+//     return acc;
+//   }, 0);
 
-const numOfAllData = Object.entries(disruptionsData)
-  .flat()
-  .filter(el => typeof el !== 'string')
-  .flat()
-  .reduce((acc, _) => {
-    acc++;
-    return acc;
-  }, 0);
+// // console.log("Total: ", numOfAllData);
 
-// console.log("Total: ", numOfAllData);
+// export { countCauses };
 
-export { countCauses };
+// export { routesIncluding, countCauses, displayBubbleCharts, makeRouteOnMap };
