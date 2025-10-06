@@ -49,14 +49,6 @@ const getAllRoutes = (disruptionsByYear, period = 'all') => {
   return routes;
 };
 
-// const getAllRoutesArray = (disruptionsByYear, period = 'all') => {
-//   const set = getAllRoutes(disruptionsByYear, period);
-//   return [...set].map(k => {
-//     const [from, to] = k.split('|');
-//     return { from, to };
-//   });
-// };
-
 const getAllRoutesArray = (
   disruptionsByYear,
   period = 'all',
@@ -81,7 +73,3 @@ const getAllRoutesArray = (
 };
 
 export { parseCodes, getAllRoutes, getAllRoutesArray };
-
-// Usage:
-// const routesSet = getAllRoutes(disruptionsData, '2024'); // Set of "FROM|TO"
-// const routesArr = getAllRoutesArray(disruptionsData, 'all'); // [{from:'AMS', to:'RTD'}, ...]

@@ -32,10 +32,12 @@
       import { MAKE_MAP } from './modules/station-coords.mjs';
       import { MAKE_CONTROLS } from './modules/render-controls.mjs';
       import { renderCausesByYear } from './modules/render-causes.mjs';
+      // import { runFunc, manipulateDays } from './modules/day-data.mjs';
 
       MAKE_MAP();
       MAKE_CONTROLS();
       renderCausesByYear();
+      // runFunc();
     </script>
 
     <main class="home-main">
@@ -69,12 +71,42 @@
           <div id="map"></div>
         </div>
 
-        <div class="causes-container"></div>
+        <div class="causes-container">
+          <!-- Select a destination and arrival station to view -->
+        </div>
       </div>
     </main>
 
     <section class="details-container">
-      <div class="days-info-container"></div>
+      <div class="days-info-container">
+        <p class="rank-header">Breakdown of Delays by Days</p>
+        <div class="parent">
+          <div class="div1 day">
+            <div class="day-title">Monday</div>
+          </div>
+          <div class="div2 day">
+            <div class="day-title">Tuesday</div>
+          </div>
+          <div class="div3 day">
+            <div class="day-title">Wednesday</div>
+          </div>
+          <div class="div4 day">
+            <div class="day-title">Thursday</div>
+          </div>
+          <div class="div5 day">
+            <div class="day-title">Friday</div>
+          </div>
+          <div class="div6">
+            <div class="div6-1 day">
+              <div class="day-title">Saturday</div>
+            </div>
+            <div class="div6-2 day">
+              <div class="day-title">Sunday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="rank-container"></div>
     </section>
   </body>

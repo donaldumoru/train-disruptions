@@ -1,5 +1,6 @@
 import { disruptionsData } from './fetch.mjs';
 import { map, stationOptions } from './station-coords.mjs';
+import { displayDaysData, renderDaysData } from './day-data.mjs';
 
 const rankingContainer = document.querySelector('.rank-container');
 
@@ -67,7 +68,14 @@ const countCauses = function (disruptions) {
       const obj = {};
       obj.title = cause;
       obj.value = 1;
-      obj.color = causesColors[curr?.cause_group.split(' ').join('_')];
+
+      // here we check if cause group exists on the current item
+      // if it doesnt exist, we set it to unknown to prevent getting 'undefined'
+      const causeGroup = curr?.cause_group || 'unknown';
+
+      obj.group = causeGroup;
+
+      obj.color = causesColors[causeGroup.split(' ').join('_')];
 
       acc.push(obj);
     }
@@ -98,7 +106,6 @@ const displayBubbleCharts = function (causes) {
     const div = document.createElement('div');
     div.setAttribute('data-id', 'bubble');
     div.className = 'bubble';
-    div.textContent = d.data.title;
     div.style.width = div.style.height = d.r * 2 + 'px';
     div.style.left = d.x - d.r + 'px';
     div.style.top = d.y - d.r + 'px';
@@ -110,6 +117,15 @@ const displayBubbleCharts = function (causes) {
     div.style.justifyContent = 'center';
     div.style.color = 'white';
     div.style.fontSize = '10px';
+
+    const setDataId = d.data.title.split(' ').join('-');
+
+    div.setAttribute('data-id', setDataId);
+
+    if (d.r * 2 > 50) {
+      div.textContent = d.data.title;
+    }
+
     document.body.appendChild(div);
 
     causesContainer.append(div);
@@ -306,6 +322,49 @@ const displayRankings = function (rankings, userRank, period) {
   });
 };
 
+const hoverEffects = function (causes) {
+  const container = document.querySelector('.causes-container');
+
+  container.addEventListener('mouseover', function (e) {
+    const bubble = e.target.closest('.bubble');
+    if (!bubble || !container.contains(bubble)) return;
+
+    const title = bubble.textContent.trim();
+    const causeHovered = causes.find(
+      c => c.title === bubble.dataset.id.split('-').join(' ')
+    );
+    if (!causeHovered) return;
+
+    const detailsInfoWrapper = document.createElement('div');
+    detailsInfoWrapper.className = 'details-info';
+    detailsInfoWrapper.insertAdjacentHTML(
+      'beforeend',
+      `<span><strong>Cause: </strong>${causeHovered.title}</span>
+       <span><strong>Cause Group: </strong>${causeHovered.group}</span>
+       <span><strong>Incidents: </strong> ${causeHovered.value}</span>`
+    );
+
+    detailsInfoWrapper.style.top = `${e.clientY + 10}px`;
+    detailsInfoWrapper.style.left = `${e.clientX + 10}px`;
+
+    document.body.append(detailsInfoWrapper);
+
+    const remove = () => {
+      detailsInfoWrapper.remove();
+      container.removeEventListener('mousemove', move);
+      bubble.removeEventListener('mouseleave', remove);
+    };
+
+    const move = evt => {
+      detailsInfoWrapper.style.top = `${evt.clientY + 10}px`;
+      detailsInfoWrapper.style.left = `${evt.clientX + 10}px`;
+    };
+
+    container.addEventListener('mousemove', move);
+    bubble.addEventListener('mouseleave', remove, { once: true });
+  });
+};
+
 const getCauses = function (e) {
   /// keep in mind------->>>>>that the THIS keyword has now been set to an array containing 'Disruptions' data and 'Stations' data
   const [disruptions, stations] = this; // Directly destructure the array here
@@ -363,8 +422,6 @@ const getCauses = function (e) {
       allDisruptionsRankings.push(userRanking);
     }
 
-    // allDisruptionsRankings.push(userRanking);
-
     const sortedResults = allDisruptionsRankings
       .sort((a, b) => b.disruptionValue - a.disruptionValue)
       .reduce((acc, curr, index) => {
@@ -378,10 +435,13 @@ const getCauses = function (e) {
         return acc;
       }, []);
 
-    console.log(year);
     displayRankings(sortedResults, userRanking, year);
 
     displayBubbleCharts(causesData);
+
+    // HERE WE WILL CALL THIS FUNCTION WITH 'ALL MATCHES &&&&&'
+    renderDaysData(displayDaysData(allMatches));
+    hoverEffects(causesData);
   }
 };
 
