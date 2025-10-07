@@ -294,3 +294,17 @@ button {
 .start-display {
   justify-content: space-between;
 }
+
+@media only screen and (min-width: 1920px) {
+  .hero-container {
+    gap: 400px;
+  }
+
+  .causes-container {
+    top: 150px;
+  }
+
+  .details-container {
+    justify-content: space-around;
+  }
+}

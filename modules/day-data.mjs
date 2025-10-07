@@ -96,20 +96,31 @@ const renderDaysData = function (obj) {
 
   dayDetails.forEach(d => (d.innerHTML = ''));
 
-  allDivs.forEach((div, index) => {
-    const dayTitle = div.querySelector('.day-title');
-    dayTitle.textContent = dataToDisplay[index][0];
+  for (let i = 0; i < allDivs.length; i++) {
+    const dayTitle = allDivs[i].querySelector('.day-title');
+
+    if (!dataToDisplay[i]) {
+      continue;
+    }
+
+    dayTitle.textContent = dataToDisplay[i][0];
 
     const details = `<div class="day-details">
-                <p><span>Disruptions: </span>${dataToDisplay[index][1].disruptions} incidents</p>
-                <p><span>Avg. Fix Time: </span>${dataToDisplay[index][1].averageTime} mins</p>
-                <p><span>Peak Hour: </span>${dataToDisplay[index][1].highestOccurence} </p>
+                <p><span>Disruptions: </span>${
+                  dataToDisplay[i][1].disruptions
+                } incidents</p>
+                <p><span>Avg. Fix Time: </span>${
+                  dataToDisplay[i][1].averageTime || 'No data'
+                } mins</p>
+                <p><span>Peak Hour: </span>${
+                  dataToDisplay[i][1].highestOccurence || 'No data'
+                } </p>
               </div>`;
 
-    div.insertAdjacentHTML('beforeend', details);
+    allDivs[i].insertAdjacentHTML('beforeend', details);
 
-    dayTitle.textContent = dataToDisplay[index][0];
-  });
+    dayTitle.textContent = dataToDisplay[i][0];
+  }
 };
 
 export { displayDaysData, renderDaysData };

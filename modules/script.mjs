@@ -105,6 +105,8 @@ const displayBubbleCharts = function (causes) {
   const pack = d3.pack().size([800, 800]).padding(5);
   const nodes = pack(root).leaves();
 
+  const layoutSize = 800;
+
   nodes.forEach(d => {
     const div = document.createElement('div');
     div.setAttribute('data-id', 'bubble');
@@ -256,7 +258,7 @@ const displayRankings = function (rankings, userRank, period) {
   const rankHeader = document.createElement('p');
   rankHeader.className = 'rank-header';
 
-  const showYear = period === 'all' ? 'Since 2021' : period;
+  const showYear = period === 'all' ? 'Since 2018' : period;
 
   rankHeader.textContent = `Where your route ranks - ${showYear}`;
 
@@ -264,10 +266,22 @@ const displayRankings = function (rankings, userRank, period) {
 
   const indexOfUserRank = rankings.indexOf(userRank);
 
-  const ranksToDisplay = rankings.slice(
-    indexOfUserRank - 5,
-    indexOfUserRank + 10
-  );
+  let startPostion = indexOfUserRank - 5;
+  let endPosition = indexOfUserRank + 10;
+
+  if (indexOfUserRank - 5 < 5) {
+    startPostion = 0;
+    endPosition = 15;
+  }
+
+  // if(indexOfUserRank)
+
+  // console.log(rankings);
+
+  const ranksToDisplay = rankings.slice(startPostion, endPosition);
+
+  // console.log('start: ', indexOfUserRank - 5);
+  // console.log('end: ', indexOfUserRank + 10);
 
   const maxDisruptions = ranksToDisplay[0]?.disruptionValue || 1;
   const MAX_PX = 400;
