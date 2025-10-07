@@ -102,7 +102,7 @@ const renderDaysData = function (obj) {
 
     const details = `<div class="day-details">
                 <p><span>Disruptions: </span>${dataToDisplay[index][1].disruptions} incidents</p>
-                <p><span>Avg. Fix Time: </span>${dataToDisplay[index][1].averageTime} </p>
+                <p><span>Avg. Fix Time: </span>${dataToDisplay[index][1].averageTime} mins</p>
                 <p><span>Peak Hour: </span>${dataToDisplay[index][1].highestOccurence} </p>
               </div>`;
 

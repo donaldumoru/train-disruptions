@@ -3,6 +3,9 @@ import { map, stationOptions } from './station-coords.mjs';
 import { displayDaysData, renderDaysData } from './day-data.mjs';
 
 const rankingContainer = document.querySelector('.rank-container');
+const detailsContainer = document.querySelector('.details-container');
+const heroContainer = document.querySelector('.hero-container');
+const startContainer = document.querySelector('.start-container');
 
 import {
   parseCodes,
@@ -122,7 +125,11 @@ const displayBubbleCharts = function (causes) {
 
     div.setAttribute('data-id', setDataId);
 
-    if (d.r * 2 > 50) {
+    if (d.r * 2 < 50) {
+      div.textContent = '';
+    } else if (d.r * 2 < 55 && d.data.title.length > 25) {
+      div.textContent = '';
+    } else {
       div.textContent = d.data.title;
     }
 
@@ -381,7 +388,13 @@ const getCauses = function (e) {
 
   const allDisruptions = Object.values(disruptions).flat();
 
+  let errorMessage = 'Select';
+
   if (!departure || !arrival || !year) return;
+
+  causesContainer.classList.remove('hide');
+  heroContainer.classList.remove('start-display');
+  startContainer.classList.add('hide');
 
   let allMatches;
 
@@ -442,6 +455,7 @@ const getCauses = function (e) {
     // HERE WE WILL CALL THIS FUNCTION WITH 'ALL MATCHES &&&&&'
     renderDaysData(displayDaysData(allMatches));
     hoverEffects(causesData);
+    detailsContainer.classList.remove('hide');
   }
 };
 

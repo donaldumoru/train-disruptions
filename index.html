@@ -32,7 +32,6 @@
       import { MAKE_MAP } from './modules/station-coords.mjs';
       import { MAKE_CONTROLS } from './modules/render-controls.mjs';
       import { renderCausesByYear } from './modules/render-causes.mjs';
-      // import { runFunc, manipulateDays } from './modules/day-data.mjs';
 
       MAKE_MAP();
       MAKE_CONTROLS();
@@ -45,39 +44,43 @@
         <div class="departure-wrapper">
           <label for="departure">departure</label>
           <select name="departure" id="departure">
-            <option value="">select a station</option>
+            <option value="">Select a station</option>
           </select>
         </div>
 
         <div class="arrival-wrapper">
           <label for="arrival">arrival</label>
           <select name="arrival" id="arrival">
-            <option value="">select a station</option>
+            <option value="">Select a station</option>
           </select>
         </div>
 
         <div class="year-wrapper">
           <label for="year">select time period</label>
           <select name="year" id="year">
-            <option value="">year</option>
+            <option value="">Year</option>
           </select>
         </div>
 
-        <button type="button">view</button>
+        <button class="button8" type="button">VIEW</button>
       </div>
 
-      <div class="hero-container">
+      <div class="hero-container start-display">
         <div class="map-container">
           <div id="map"></div>
         </div>
 
-        <div class="causes-container">
+        <div class="causes-container hide">
           <!-- Select a destination and arrival station to view -->
+        </div>
+
+        <div class="start-container">
+          Select a destination, arrival station and time period
         </div>
       </div>
     </main>
 
-    <section class="details-container">
+    <section class="details-container hide">
       <div class="days-info-container">
         <p class="rank-header">Breakdown of Delays by Days</p>
         <div class="parent">

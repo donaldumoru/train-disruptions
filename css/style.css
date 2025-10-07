@@ -6,15 +6,18 @@
     Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
+:root {
+  --off-light: #faf9f6;
+}
+
 body {
-  /* background-color: #4a4a4a; */
   background-color: rgb(16, 14, 14);
 }
 
 .controls {
   display: flex;
   gap: 20px;
-  color: white;
+  color: var(--off-light);
   margin: 30px 0 50px 100px;
   align-items: end;
 }
@@ -63,7 +66,7 @@ button {
 
 .details-info {
   position: fixed;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.878);
   display: flex;
   flex-direction: column;
   padding: 10px 15px 10px 5px;
@@ -73,7 +76,7 @@ button {
 
 .details-info span {
   text-transform: capitalize;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 #map {
@@ -88,7 +91,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--off-light);
   text-align: center;
   padding: 10px;
   /* line-height: 1.2; */
@@ -118,13 +121,13 @@ button {
 }
 
 .rank-header {
-  color: white;
+  color: var(--off-light);
 }
 
 .rank-wrapper {
   display: flex;
   gap: 30px;
-  color: white;
+  color: var(--off-light);
 }
 
 .text-wrapper {
@@ -187,7 +190,7 @@ button {
   display: grid;
   /* grid-template-columns: repeat(5, 1fr); */
   /* grid-template-rows: repeat(5, 1fr); */
-  gap: 8px;
+  gap: 5px;
   margin-top: 10px;
 }
 
@@ -201,6 +204,12 @@ button {
   flex-direction: column;
   gap: 10px;
   padding-top: 5px;
+}
+
+.day-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .day span {
@@ -244,7 +253,7 @@ button {
   grid-column-start: 1;
   grid-row-start: 3;
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
 
 .div6-1 {
@@ -269,3 +278,19 @@ button {
 /* .day-disruption-display {
   font-size: 0.9rem;
 } */
+
+.start-container {
+  color: var(--off-light);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  margin-right: 200px;
+}
+
+.hide {
+  display: none;
+}
+
+.start-display {
+  justify-content: space-between;
+}
