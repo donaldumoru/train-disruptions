@@ -308,3 +308,59 @@ button {
     justify-content: space-around;
   }
 }
+
+/*LOGO ANIMATION*/
+
+.morelogo{
+  padding: 48px;
+  margin-bottom: 60px;
+}
+
+.logo-slider {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.logo-track {
+  display: inline-block;
+  animation: scroll 20s linear infinite;
+}
+
+.logo-track img {
+  height: 110px;
+  margin: 0 30px;
+  vertical-align: middle;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+/*copyRight*/
+
+.copyright {
+  position: relative;
+  color: white;
+  text-align: center;
+}
+
+@media (min-width: 1680px) {
+
+  .causes-container {
+    margin-top: -20px;
+    margin-left: -10px;
+  }
+
+  
+
+
+  
+}
