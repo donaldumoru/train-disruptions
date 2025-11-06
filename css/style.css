@@ -311,9 +311,9 @@ button {
 
 /*LOGO ANIMATION*/
 
-.morelogo{
+.morelogo {
   padding: 48px;
-  margin-bottom: 60px;
+  margin: 60px 0;
 }
 
 .logo-slider {
@@ -343,24 +343,18 @@ button {
   }
 }
 
-
 /*copyRight*/
 
 .copyright {
   position: relative;
   color: white;
   text-align: center;
+  margin-bottom: 30px;
 }
 
 @media (min-width: 1680px) {
-
   .causes-container {
     margin-top: -20px;
     margin-left: -10px;
   }
-
-  
-
-
-  
 }

@@ -6,6 +6,7 @@ const rankingContainer = document.querySelector('.rank-container');
 const detailsContainer = document.querySelector('.details-container');
 const heroContainer = document.querySelector('.hero-container');
 const startContainer = document.querySelector('.start-container');
+const trainAnimationContainer = document.querySelector('.logo-track');
 
 import {
   parseCodes,
@@ -480,3 +481,13 @@ controlsContainer.addEventListener('click', e => {
     boundGetCauses(e);
   }
 });
+
+const createTrainImages = function () {
+  for (let i = 0; i < 15; i++) {
+    const trainImg = document.createElement('img');
+    trainImg.src = 'img/train.png';
+    trainAnimationContainer.appendChild(trainImg);
+  }
+};
+
+createTrainImages();
