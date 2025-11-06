@@ -105,8 +105,6 @@ const displayBubbleCharts = function (causes) {
   const pack = d3.pack().size([800, 800]).padding(5);
   const nodes = pack(root).leaves();
 
-  const layoutSize = 800;
-
   nodes.forEach(d => {
     const div = document.createElement('div');
     div.setAttribute('data-id', 'bubble');

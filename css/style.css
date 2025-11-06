@@ -295,7 +295,7 @@ button {
   justify-content: space-between;
 }
 
-@media only screen and (min-width: 1920px) {
+/* @media only screen and (min-width: 1920px) {
   .hero-container {
     gap: 400px;
   }
@@ -307,4 +307,4 @@ button {
   .details-container {
     justify-content: space-around;
   }
-}
+} */
