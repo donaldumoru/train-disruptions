@@ -7,6 +7,8 @@ const detailsContainer = document.querySelector('.details-container');
 const heroContainer = document.querySelector('.hero-container');
 const startContainer = document.querySelector('.start-container');
 const trainAnimationContainer = document.querySelector('.logo-track');
+const periodDisplay = document.querySelector('.period-display');
+const legendContainer = document.querySelector('.legend-container');
 
 import {
   parseCodes,
@@ -19,7 +21,6 @@ const causesContainer = document.querySelector('.causes-container');
 const controlsContainer = document.querySelector('.controls');
 
 const causesColors = {
-  others: '#1395FF',
   accidents: '#E8870F',
   engineering_work: '#B23B63',
   external: '#E407BC',
@@ -29,6 +30,23 @@ const causesColors = {
   staff: '#29E2BD',
   unknown: '#0D5C76',
   weather: '#2E0D76',
+  others: '#1395FF',
+};
+
+const makeLegend = function () {
+  const allCauses = Object.entries(causesColors);
+
+  allCauses.forEach(([text, color]) => {
+    const causeWrapper = document.createElement('div');
+    const causeGroupColor = document.createElement('div');
+    causeGroupColor.classList.add('cause-group-color');
+    causeGroupColor.style.backgroundColor = color;
+    const causeGroupText = document.createElement('span');
+    causeGroupText.textContent = text.split('_').join(' ');
+    causeWrapper.append(causeGroupColor, causeGroupText);
+
+    legendContainer.append(causeWrapper);
+  });
 };
 
 /**
@@ -275,14 +293,7 @@ const displayRankings = function (rankings, userRank, period) {
     endPosition = 15;
   }
 
-  // if(indexOfUserRank)
-
-  // console.log(rankings);
-
   const ranksToDisplay = rankings.slice(startPostion, endPosition);
-
-  // console.log('start: ', indexOfUserRank - 5);
-  // console.log('end: ', indexOfUserRank + 10);
 
   const maxDisruptions = ranksToDisplay[0]?.disruptionValue || 1;
   const MAX_PX = 400;
@@ -322,8 +333,7 @@ const displayRankings = function (rankings, userRank, period) {
 
     trainContainer.append(train);
 
-    // Windows: fit as many as width allows
-    const WINDOW_W = 15; // px
+    const WINDOW_W = 15;
 
     const count = width / WINDOW_W / 2;
 
@@ -403,9 +413,48 @@ const getCauses = function (e) {
 
   const allDisruptions = Object.values(disruptions).flat();
 
-  let errorMessage = 'Select';
+  const depSel = e.currentTarget.querySelector('.departure-wrapper select');
+  const arrSel = e.currentTarget.querySelector('.arrival-wrapper select');
+  const yearSel = e.currentTarget.querySelector('.year-wrapper select');
 
-  if (!departure || !arrival || !year) return;
+  [depSel, arrSel, yearSel].forEach(el => el.classList.remove('error'));
+  let error = '';
+
+  if (!departure) error += 'Please select a departure station. ';
+  if (!arrival) error += 'Please select an arrival station. ';
+  if (!year) error += 'Please select a time period. ';
+  if (departure && arrival && departure === arrival) {
+    error += 'Departure and arrival cannot be the same. ';
+  }
+
+  if (error) {
+    let errBox = e.currentTarget.querySelector('.form-error');
+    if (!errBox) {
+      errBox = document.createElement('div');
+      errBox.className = 'form-error';
+      e.currentTarget.append(errBox);
+    }
+    errBox.style.display = 'flex';
+    errBox.textContent = error;
+
+    if (!departure) depSel.classList.add('error');
+    if (!arrival) arrSel.classList.add('error');
+    if (!year) yearSel.classList.add('error');
+
+    return;
+  }
+
+  if (document.querySelector('.form-error')) {
+    if (departure && arrival && year) {
+      document.querySelector('.form-error').style.display = 'none';
+    }
+  }
+
+  if (year !== 'all') {
+    periodDisplay.textContent = year;
+  } else {
+    periodDisplay.textContent = 'Since 2018';
+  }
 
   causesContainer.classList.remove('hide');
   heroContainer.classList.remove('start-display');
@@ -466,6 +515,7 @@ const getCauses = function (e) {
     displayRankings(sortedResults, userRanking, year);
 
     displayBubbleCharts(causesData);
+    makeLegend();
 
     // HERE WE WILL CALL THIS FUNCTION WITH 'ALL MATCHES &&&&&'
     renderDaysData(displayDaysData(allMatches));

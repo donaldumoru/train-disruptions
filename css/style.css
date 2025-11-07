@@ -14,12 +14,68 @@ body {
   background-color: rgb(16, 14, 14);
 }
 
+main {
+  position: relative;
+}
+
+.period-display {
+  color: var(--off-light);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  font-size: 2.5rem;
+  font-weight: 100;
+}
+
+.legend-container {
+  position: absolute;
+  /* top: 50px; */
+  right: 0;
+  bottom: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.legend-container div {
+  display: flex;
+  gap: 5px;
+}
+
+.legend-container span {
+  color: var(--off-light);
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.cause-group-color {
+  width: 20px;
+  aspect-ratio: 1;
+}
+
 .controls {
   display: flex;
   gap: 20px;
   color: var(--off-light);
   margin: 30px 0 50px 100px;
   align-items: end;
+}
+
+.form-error {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  /* background: #ffecec; */
+  color: #d50128;
+  /* border: 1px solid #f5c2c7; */
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+select.error {
+  outline: 2px solid #b00020;
+  border-color: #b00020;
 }
 
 label {
